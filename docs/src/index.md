@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = PythonVEnv
+CurrentModule = VEnv
 ```
 
-# PythonVEnv
+# VEnv
 
-Documentation for [PythonVEnv](https://github.com/Christopher Rowley/PythonVEnv.jl).
+Documentation for [VEnv](https://github.com/cjdoris/VEnv.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [PythonVEnv]
+Modules = [VEnv]
 ```

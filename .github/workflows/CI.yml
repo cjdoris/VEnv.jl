@@ -58,6 +58,6 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using PythonVEnv
-            DocMeta.setdocmeta!(PythonVEnv, :DocTestSetup, :(using PythonVEnv); recursive=true)
-            doctest(PythonVEnv)'
+            using VEnv
+            DocMeta.setdocmeta!(VEnv, :DocTestSetup, :(using VEnv); recursive=true)
+            doctest(VEnv)'

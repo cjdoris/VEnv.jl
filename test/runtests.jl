@@ -1,6 +1,6 @@
-using PythonVEnv
+using VEnv
 using Test
 
-@testset "PythonVEnv.jl" begin
+@testset "VEnv.jl" begin
     # Write your tests here.
 end

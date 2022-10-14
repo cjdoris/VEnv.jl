@@ -72,7 +72,7 @@ version = "2.4.2"
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
-[[deps.PythonVEnv]]
+[[deps.VEnv]]
 path = ".."
 uuid = "edc963e9-dcda-4f66-9026-82f0eeff0a32"
 version = "0.1.0"

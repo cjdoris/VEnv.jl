@@ -1,16 +1,16 @@
-using PythonVEnv
+using VEnv
 using Documenter
 
-DocMeta.setdocmeta!(PythonVEnv, :DocTestSetup, :(using PythonVEnv); recursive=true)
+DocMeta.setdocmeta!(VEnv, :DocTestSetup, :(using VEnv); recursive=true)
 
 makedocs(;
-    modules=[PythonVEnv],
+    modules=[VEnv],
     authors="Christopher Doris <github.com/cjdoris> and contributors",
-    repo="https://github.com/Christopher Rowley/PythonVEnv.jl/blob/{commit}{path}#{line}",
-    sitename="PythonVEnv.jl",
+    repo="https://github.com/cjdoris/VEnv.jl/blob/{commit}{path}#{line}",
+    sitename="VEnv.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://Christopher Rowley.github.io/PythonVEnv.jl",
+        canonical="https://Christopher Rowley.github.io/VEnv.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -20,6 +20,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/Christopher Rowley/PythonVEnv.jl",
+    repo="github.com/cjdoris/VEnv.jl",
     devbranch="main",
 )
