@@ -57,7 +57,7 @@ function meta_rm(venv)
 end
 
 function lock_file(venv)
-    return joinpath(abspath(venv), "julia_venv_lock")
+    return rstrip(c->c in ('\\', '/'), abspath(venv)) * ".lock"
 end
 
 function lock_make(venv)
@@ -118,6 +118,7 @@ function create(f::Union{Function,Nothing}, venv::AbstractString;
 
     # check venv
     venv = abspath(venv)
+    mkpath(venv)
 
     # lock
     lock = lock_make(venv)
@@ -189,14 +190,16 @@ function activate!(env, venv)
         error("No such virtual environment: $venv")
     end
     # PATH
-    path_list = [joinpath(venv, "bin")]
+    sep = Sys.iswindows() ? ";" : ":"
+    bindir = Sys.iswindows() ? "Scripts" : "bin"
+    path_list = [joinpath(venv, bindir)]
     if haskey(meta, "path")
         push!(path_list, meta["path"])
     end
     if haskey(ENV, "PATH")
         push!(path_list, ENV["PATH"])
     end
-    env["PATH"] = join(path_list, ":")
+    env["PATH"] = join(path_list, sep)
     # LD_LIBRARY_PATH
     libpath_list = String[]
     if haskey(meta, "libpath")
@@ -206,7 +209,7 @@ function activate!(env, venv)
         push!(libpath_list, ENV["LD_LIBRARY_PATH"])
     end
     if !isempty(libpath_list)
-        env["LD_LIBRARY_PATH"] = join(libpath_list, ":")
+        env["LD_LIBRARY_PATH"] = join(libpath_list, sep)
     end
     env["VIRTUAL_ENV"] = venv
     delete!(env, "PYTHONHOME")
