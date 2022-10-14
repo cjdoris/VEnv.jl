@@ -21,7 +21,7 @@ pkg> add https://github.com/cjdoris/VEnv.jl
 ### Basic Usage
 
 The following script creates a temporary directory containing a virtual environment,
-installs [`cowsay`](https://pypi.org/project/cowsay/) into it, then calls it to print a
+installs [cowsay](https://pypi.org/project/cowsay/) into it, then calls it to print a
 message to the terminal.
 
 ```julia
@@ -50,23 +50,23 @@ VEnv.run(`python -m cowsay --character tux 'Hello, world!'`, venv);
 ### Usage In Packages
 
 Here is a minimal example of a package providing an interface to the Python
-[`cowsay`](https://pypi.org/project/cowsay/) package.
+[cowsay](https://pypi.org/project/cowsay/) package.
 
 The `_venv()` function returns the path to a virtual environment with the `cowsay` package
 installed.
 
 The virtual environment is installed into a scratch space using
-[`Scratch.jl`](https://github.com/JuliaPackaging/Scratch.jl). This is a Julia-managed
+[Scratch.jl](https://github.com/JuliaPackaging/Scratch.jl). This is a Julia-managed
 directory which will be automatically deleted when the package itself is deleted.
 
-It uses `create_once` to create the virtual environment. Unlike `create`, it will only
-create the environment if it does not exist yet, or if the `version` has changed. This means
-that subsequent calls to `_venv()` are very fast.
+When `VEnv.create` is given the `version` argument, it will skip creating the environment if
+it already exists and the version has not changed. This means that subsequent calls to
+`get_venv()` are fast, even after restarting Julia.
 
 The body of the `do` block is also called when the environment is created. Use this to
-install packages into the environment. Increment the `version` whenever the `create_once`
-call changes to ensure the environment is recreated - for example when changing the packages
-installed (or the versions of packages).
+install packages. Increment the `version` whenever the `create` call changes to ensure the
+environment is recreated - for example when changing the packages installed (or the versions
+of packages).
 
 The `cowsay()` function is an example of how to use the virtual environment. In this case,
 we use `VEnv.run` to run the `cowsay` command in the environment.
@@ -74,16 +74,34 @@ we use `VEnv.run` to run the `cowsay` command in the environment.
 ```julia
 using VEnv, Scratch
 
-function _venv()
+function get_venv()
     venv = Scratch.@get_scratch!("venv")
-    version = "1"
-    VEnv.create_once(venv, version) do venv
+    VEnv.create(venv, version="1") do venv
         VEnv.run(`pip install cowsay`, venv)
     end
     return venv
 end
 
 function cowsay(message; character="cow")
-    VEnv.run(`python -m cowsay --character $character $message`, _venv())
+    VEnv.run(`python -m cowsay --character $character $message`, get_venv())
 end
 ```
+
+## API
+
+See the docstrings for keyword arguments and detailed usage.
+
+- `VEnv.create([func], venv)`: Create a venv.
+- `VEnv.run(cmd, venv)`: Run a command in the venv.
+- `VEnv.addenv(cmd, venv)`: Return the given command with environment variables set so it
+  will run in the venv.
+- `VEnv.getenv(venv)`: Return the environment variables for the venv.
+
+## Configuration
+
+By default, Python is bundled with this package (specifically by
+[Python_jll.jl](https://github.com/JuliaBinaryWrappers/Python_jll.jl)) so you do not need to
+install it yourself.
+
+If your platform is not supported by Python_jll (e.g. Windows) then you will need it to
+install it yourself.
