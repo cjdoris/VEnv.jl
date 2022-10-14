@@ -112,6 +112,9 @@ function create(f::Union{Function,Nothing}, venv::AbstractString;
 )
     # check python
     python = select_python()
+    if python === nothing
+        error("Python is not installed on your system and is not supported by Python_jll.")
+    end
 
     # check venv
     venv = abspath(venv)
