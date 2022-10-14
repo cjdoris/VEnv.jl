@@ -10,7 +10,7 @@ makedocs(;
     sitename="VEnv.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://Christopher Rowley.github.io/VEnv.jl",
+        canonical="https://cjdoris.github.io/VEnv.jl",
         edit_link="main",
         assets=String[],
     ),
