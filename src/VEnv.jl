@@ -1,6 +1,6 @@
 module VEnv
 
-import Python_jll, Scratch
+import Python_jll
 
 """
     create(venv)
@@ -11,7 +11,7 @@ function create(venv::AbstractString;
     system_site_packages::Bool=false,
     symlinks::Bool=false,
     copies::Bool=false,
-    clear::Bool=false,
+    clear::Bool=true,
     upgrade::Bool=false,
     without_pip::Bool=false,
     prompt::Union{Nothing,AbstractString}=nothing,
@@ -40,7 +40,7 @@ function create(venv::AbstractString;
     end
     cmd = `$(Python_jll.python()) -m venv $args $venv`
     @debug "Creating VEnv" cmd
-    run(cmd)
+    Base.run(cmd)
     return
 end
 
@@ -91,104 +91,44 @@ function addenv(cmd::Cmd, venv::AbstractString; inherit::Bool=true)
 end
 
 """
-    pip(venv)
+    run(cmd, venv; inherit=true)
 
-A command which runs `pip` in the virtual environment `venv`.
+Runs the command `cmd` in the virtual environment at `venv`.
 
-Shorthand for ```addenv(`pip`, venv)```.
-
-For example, the following prints out the pip version in the venv at ./venv:
-```
-run(`\$(VEnv.pip("./venv")) --version`)
-```
+Simply shorthand for `Base.run(VEnv.addenv(...))`.
 """
-function pip(venv::AbstractString)
-    return addenv(`pip`, venv)
+function run(cmd::Cmd, venv::AbstractString; inherit::Bool=true)
+    return Base.run(addenv(cmd, venv; inherit))
 end
 
-"""
-    python(venv)
-
-A command which runs `python` in the virtual environment `venv`.
-
-Shorthand for ```addenv(`python`, venv)```.
-
-For example, the following prints out the pip version in the venv at ./venv:
-```
-run(`\$(VEnv.python("./venv")) --version`)
-```
-"""
-function python(venv::AbstractString)
-    return addenv(`python`, venv)
-end
 
 """
-    create_once([f], venv, id; kw...)
+    create_once([f], venv, version; kw...)
 
 Create a virtual environment if it has not already been created.
 
 Calls `create(venv; kw...)` if the virtual environment at `venv` does not exist or if the
-`id` has changed since the last time it was created.
+`version` has changed since the last time it was created.
 
 You may optionally also specify a function `f(venv)` which is called when creating the
 environment.
 """
-function create_once(f::Function, venv::AbstractString, id::AbstractString; kw...)
+function create_once(f::Function, venv::AbstractString, version::AbstractString; kw...)
     venv = abspath(venv)
-    idfile = joinpath(venv, ".julia_venv_id")
-    if isfile(idfile) && read(idfile, String) == id
-        @debug "Virtual Environment already initialised" venv id
+    verfile = joinpath(venv, ".julia_venv_version")
+    if isfile(verfile) && read(verfile, String) == version
+        @debug "Virtual Environment already initialised" venv version
     else
-        @debug "Creating Virtual Environment" venv id
-        rm(idfile, force=true)
+        @debug "Creating Virtual Environment" venv version
+        rm(verfile, force=true)
         create(venv; kw...)
         f(venv)
-        write(idfile, id)
+        write(verfile, version)
     end
 end
 
 function create_once(venv::AbstractString, id::AbstractString; kw...)
     return create_once(()->nothing, venv, id; kw...)
-end
-
-function cowsay()
-    venv = Scratch.@get_scratch!("venv-cowsay")
-    create_once(venv, "2", clear=true) do venv
-        run(`$(pip(venv)) install cowsay`)
-    end
-    `$(python(venv)) -m cowsay`
-end
-
-function build()
-    venv = Scratch.@get_scratch!("venv-build")
-    create_once(venv, "2", clear=true) do venv
-        run(`$(pip(venv)) install build`)
-    end
-    `$(python(venv)) -m build`
-end
-
-function poetry()
-    venv = Scratch.@get_scratch!("venv-poetry")
-    create_once(venv, "2", clear=true) do venv
-        run(`$(pip(venv)) install poetry`)
-    end
-    `$(python(venv)) -m poetry`
-end
-
-function pipx()
-    venv = Scratch.@get_scratch!("venv-pipx")
-    create_once(venv, "2", clear=true) do venv
-        run(`$(pip(venv)) install pipx`)
-    end
-    `$(python(venv)) -m pipx`
-end
-
-function snake()
-    venv = Scratch.@get_scratch!("venv-snake")
-    create_once(venv, "3", clear=true) do venv
-        run(`$(pip(venv)) install cli-snakegame`)
-    end
-    `$(python(venv)) -m snake`
 end
 
 end
