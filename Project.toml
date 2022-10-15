@@ -8,6 +8,7 @@ Pidfile = "fa939f87-e72e-5be4-a000-7fc836dbe307"
 Python_jll = "93d3a430-8e7c-50da-8e8d-3dfcfb3baf05"
 
 [compat]
+Pidfile = "1"
 julia = "1.6"
 
 [extras]
